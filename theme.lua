@@ -10,65 +10,58 @@ local gears     = require("gears")
 local lain      = require("lain")
 local naughty   = require ("naughty")
 local markup    = lain.util.markup
--- local helpers   = lain.helpers
-local helpers = require("lain.helpers")
+local helpers   = require("lain.helpers")
 local os        = { getenv = os.getenv }
 local my_table  = awful.util.table or gears.table -- 4.{0,1} compatibility
 
 -- Colors
-local gray         = "#F6784F"
-local green        = "#00CC66"
-local green2       = "#46FF9B"
-local green_orange = "#87af5f"
-local orange       = "#FFA500"
-local red          = "#e54c62"
 local black        = "#000000"
 local white        = "#FFFFFF"
 local gray         = "#94928F"
+
+local blue         = "#4169E1"
+local green        = "#00CC66"
+local light_green  = "#46FF9B"
+local green_orange = "#87af5f"
+local yellow       = "#FFFF00"
+local orange       = "#FFA500"
+local red          = "#e54c62"
+local reds         = "#FF5555"
+local pink         = "#FF45A8"
 local purple       = "#800080"
 local purple_dark  = "#461B7E"
-local reds         = "#FF5555"
-local blue_royal   = "#4169E1"
-local yellow       = "#FFFF00"
-local pink         = "#FF45A8"
-local wallPurple   = "#171149"
+local purple_wall  = "#774A86"
 
-local purple_wall  = "#6C3F7C"
-local purple_wall1 = "#774A86"
-local purple_wall2 = "#6D3F7C"
-local purple_wall3 = "#973E7B"
-
-local colorLevel0  = purple_wall1
-local colorLevel1  = green
-local colorLevel2  = yellow
-local colorLevel3  = red
-
-local accentColor  = gray
-local accentColor2 = gray
-local mainColor    = white
+local color_default  = green
+local color_moderate = green_orange
+local color_stress   = yellow
+local color_critical = red
+local accent_color   = blue
+local main_color     = green
 
 -- local std_font = "Terminus (TTF) 15"
 -- local std_font = "Mono 13"
 local std_font = "Sans 13"
 
-theme.font                                      = std_font
-theme.fg_normal                                 = white
-theme.fg_focus                                  = black
-theme.bg_normal                                 = black
-theme.bg_focus                                  = black
-theme.fg_urgent                                 = accentColor2
-theme.bg_urgent                                 = mainColor
-theme.border_normal                             = black
-theme.border_focus                              = accentColor2
-theme.taglist_fg_focus                          = purple_wall1
-theme.taglist_bg_focus                          = black
-theme.tasklist_fg_focus                         = gray
-theme.tasklist_fg_normal                        = '#383838'
-theme.tasklist_bg_focus                         = black
-theme.border_width                              = 0
-theme.tasklist_plain_task_name                  = true
-theme.tasklist_disable_icon                     = true
-theme.useless_gap                               = 8
+theme.font                  = std_font
+theme.fg_normal             = white
+theme.fg_focus              = black
+theme.bg_normal             = black
+theme.bg_focus              = green
+theme.fg_urgent             = black
+theme.bg_urgent             = green
+theme.border_normal         = black
+theme.border_focus          = green
+theme.taglist_fg_focus      = main_color
+theme.taglist_bg_focus      = black
+theme.tasklist_fg_focus     = main_color
+theme.tasklist_fg_normal    = white
+theme.tasklist_bg_focus     = black
+theme.tasklist_bg_normal    = black
+theme.border_width          = 0
+theme.tasklist_disable_icon = true
+theme.useless_gap           = 8
+-- theme.tasklist_plain_task_name = true
 
 -- Textclock
 local mytextclock = wibox.widget.textclock(" %H%M ")
@@ -78,8 +71,8 @@ mytextclock.font = theme.font
 lain.widget.cal({
     attach_to = { mytextclock },
     notification_preset = {
-        font = "Terminus (TTF) 16",
-        fg   = mainColor,
+        font = "Terminus (TTF) 20",
+        fg   = main_color,
         bg   = black,
         icon = ""
     }
@@ -87,26 +80,26 @@ lain.widget.cal({
 
 -- Show ip4
 ip4 = awful.widget.watch('bash -c "curl ifconfig.me 2>/dev/null"', 600, function(widget, stdout)
-    widget:set_markup(markup.fontfg(std_font, gray, stdout))
+    widget:set_markup(markup.fontfg(std_font, blue, stdout))
     -- widget:connect_signal("mouse::enter", showWifi2)
     return
 end)
 
 -- Show ssid
 ssid = awful.widget.watch('bash -c "LANG=C nmcli -t -f active,ssid dev wifi | grep ^yes | cut -d: -f2-"', 600, function(widget, stdout)
-    widget:set_markup(markup.fontfg(std_font, gray, stdout))
+    widget:set_markup(markup.fontfg(std_font, blue, stdout))
     return
 end)
 
 -- Mail Widget
 mail_ims = awful.widget.watch('bash -c "~/.config/awesome/Scripts/checkmail_ims.sh"', 600, function(widget, stdout)
-    widget:set_markup(markup.fontfg(std_font, blue_royal, stdout))
+    widget:set_markup(markup.fontfg(std_font, red, stdout))
     return
 end)
 
 -- Mail Widget
 mail = awful.widget.watch('bash -c "~/.config/awesome/Scripts/checkmail_uni.sh"', 600, function(widget, stdout)
-    widget:set_markup(markup.fontfg(std_font, blue_royal, stdout))
+    widget:set_markup(markup.fontfg(std_font, red, stdout))
     return
 end)
 
@@ -114,16 +107,16 @@ end)
 cpu_temp = awful.widget.watch('bash -c "cat /sys/class/hwmon/hwmon1/temp2_input"', 10, function(widget, stdout)
     local value = tonumber(stdout/1000)
     if value > 65 then
-        colorTemp = colorLevel3
+        color = color_critical
     elseif value > 62 then
-        colorTemp = colorLevel2
+        color = color_stress
     elseif value > 58 then
-        colorTemp = colorLevel1
+        color = color_moderate
     else
-        colorTemp = colorLevel0
+        color = color_default
     end
     value = string.format("%02.0f", value)
-    widget:set_markup(markup.fontfg(std_font, colorTemp, value .. '°C'))
+    widget:set_markup(markup.fontfg(std_font, color, value .. '°C'))
     return
 end)
 
@@ -131,16 +124,16 @@ end)
 -- gpu_temp = awful.widget.watch('bash -c "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader"', 10, function(widget, stdout)
 --     local value = tonumber(stdout)
 --     if value > 65 then
---         colorTemp = colorLevel3
+--         color = color_critical
 --     elseif value > 62 then
---         colorTemp = colorLevel2
+--         color = color_stress
 --     elseif value > 58 then
---         colorTemp = colorLevel1
+--         color = color_moderate
 --     else
---         colorTemp = colorLevel0
+--         color = color_default
 --     end
 --     value = string.format("%02.0f", value)
---     widget:set_markup(markup.fontfg(std_font, colorTemp, value .. '°C'))
+--     widget:set_markup(markup.fontfg(std_font, color, value .. '°C'))
 --     return
 -- end)
 
@@ -149,13 +142,13 @@ local gpu_temp = lain.widget.gpu({
     settings = function()
         local gpu_temp = gpu_temp_now
         if gpu_temp > 65 then
-            color = colorLevel3
+            color = color_critical
         elseif gpu_temp > 47 then
-            color = colorLevel2
+            color = color_stress
         elseif gpu_temp > 40 then
-            color = colorLevel1
+            color = color_moderate
         elseif gpu_temp > 0 then
-            color = colorLevel0
+            color = color_default
         end
         widget:set_markup(markup.font(std_font, markup(color, gpu_temp .. "°C")))
     end
@@ -166,13 +159,13 @@ local cpu_util = lain.widget.cpu({
     settings = function()
         local value = cpu_now.usage
         if value > 65 then
-            color = colorLevel3
+            color = color_critical
         elseif value > 47 then
-            color = colorLevel2
+            color = color_stress
         elseif value > 27 then
-            color = colorLevel1
+            color = color_moderate
         elseif value > 0 then
-            color = colorLevel0
+            color = color_default
         end
         widget:set_markup(markup.font(std_font, markup(color, cpu_now.usage .. "%")))
     end
@@ -183,13 +176,13 @@ local mem = lain.widget.mem({
     settings = function()
         local value = mem_now.used
         if value > 13000 then
-            color = colorLevel3
+            color = color_critical
         elseif value > 9000 then
-            color = colorLevel2
+            color = color_stress
         elseif value > 6000 then
-            color = colorLevel1
+            color = color_moderate
         elseif value > 0 then
-            color = colorLevel0
+            color = color_default
         end
         widget:set_markup(markup.font(std_font, markup(color, value .. "mb")))
     end
@@ -199,7 +192,7 @@ local mem = lain.widget.mem({
 theme.fs = lain.widget.fs({
     notification_preset = { font = "Terminus (TTF) 14", fg = theme.fg_normal },
     settings  = function()
-        widget:set_markup(markup.fontfg(std_font, gray, string.format("%.2f", fs_now["/"].free) .. "gb"))
+        widget:set_markup(markup.fontfg(std_font, blue, string.format("%.2f", fs_now["/"].free) .. "gb"))
     end
 })
 
@@ -208,18 +201,18 @@ local net = lain.widget.net({
     settings = function()
         value = tonumber(net_now.received)
         if value > 3200 then
-            color = colorLevel3
+            color = color_critical
         elseif value > 1800 then
-            color = colorLevel2
+            color = color_stress
         elseif value > 400 then
-            color = colorLevel1
+            color = color_moderate
         else
-            color = colorLevel0
+            color = color_default
         end
         value = string.format("%04.0f", value)
         widget:set_markup(
             markup.fontfg(std_font, color, " " .. value .. "kb/s ") ..
-            markup.fontfg(std_font, accentColor, net_now.total .. "mb")
+            markup.fontfg(std_font, accent_color, net_now.total .. "mb")
           )
     end
 })
@@ -231,15 +224,15 @@ local bat = lain.widget.bat({
         value = tonumber(bat_now.perc)
         if value then
             if value > 59 then
-              colorTemp = colorLevel0
+              color = color_default
             elseif value > 46 then
-              colorTemp = colorLevel1
+              color = color_moderate
             elseif value > 24 then
-              colorTemp = colorLevel2
+              color = color_stress
             else
-              colorTemp = colorLevel3
+              color = color_critical
             end
-            widget:set_markup(markup.font(std_font, markup(colorTemp, value .. "%")))
+            widget:set_markup(markup.font(std_font, markup(color, value .. "%")))
         end
     end
 })
@@ -249,7 +242,7 @@ theme.weather = lain.widget.weather({
     city_id = 2836320,
     settings = function()
         units = math.floor(weather_now["main"]["temp"])
-        widget:set_markup(markup.fontfg(std_font, gray ,units .. "°C"))
+        widget:set_markup(markup.fontfg(std_font, accent_color, units .. "°C"))
     end
 })
 
@@ -291,7 +284,7 @@ function theme.at_screen_connect(s)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             -- spr,
-            -- todo_widget,
+            --todo_widget,
             cpu_util,
             spr,
             cpu_temp,
@@ -318,6 +311,6 @@ return theme
 
 -- -- CPU Utilization
 -- cpu_util = awful.widget.watch('bash -c "~/.config/awesome/Scripts/cpu_util.sh"', 2, function(widget, stdout)
---     widget:set_markup(markup.fontfg(std_font, blue_royal, stdout))
+--     widget:set_markup(markup.fontfg(std_font, blue, stdout))
 --     return
 -- end)
