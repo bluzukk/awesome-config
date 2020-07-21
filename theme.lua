@@ -2,18 +2,20 @@
      Awesome WM Theme
 --]]
 
-local theme     = {}
-local awful     = require("awful")
-local wibox     = require("wibox")
-local beautiful = require("beautiful")
-local gears     = require("gears")
-local lain      = require("lain")
-local naughty   = require ("naughty")
-local markup    = lain.util.markup
-local helpers   = require("lain.helpers")
-local os        = { getenv = os.getenv }
-local my_table  = awful.util.table or gears.table -- 4.{0,1} compatibility
-local terminal  = "st -f 'Mono-14'"
+local theme      = {}
+local awful      = require("awful")
+local wibox      = require("wibox")
+local beautiful  = require("beautiful")
+local gears      = require("gears")
+local lain       = require("lain")
+local naughty    = require ("naughty")
+local markup     = lain.util.markup
+local helpers    = require("lain.helpers")
+local xresources = require("beautiful.xresources")
+local xrdb       = xresources.get_current_theme()
+local os         = { getenv = os.getenv }
+local my_table   = awful.util.table or gears.table -- 4.{0,1} compatibility
+local terminal   = "st -f 'Mono-14'"
 
 
 -- Scripts and Cmds
@@ -26,22 +28,21 @@ cmd_temps     = 'bash -c "sensors -A"'
 cmd_gpu_temp  = 'bash -c "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader"'
 cmd_gpu       = 'bash -c "nvidia-smi"'
 
-cmd_proc_cpu  = 'bash -c "ps -Ao comm,user,pid,pcpu,pmem --sort=-pcpu | head -n 30"'
-cmd_proc_mem  = 'bash -c "ps -Ao comm,user,pid,pmem,pcpu --sort=-pmem | head -n 30"'
+cmd_proc_cpu  = 'bash -c "ps -Ao pcpu,comm,user,pid, --sort=-pcpu | head -n 30"'
+cmd_proc_mem  = 'bash -c "ps -Ao pmem,comm,user,pid --sort=-pmem | head -n 30"'
 
 cmd_wttr      = 'bash -c "curl wttr.in"'
 
 cmd_net_info  = 'bash -c "~/.config/awesome/Scripts/net_info.sh"'
-cmd_net_total = 'bash -c "~/.config/awesome/Scripts/net_total.sh"'
-cmd_mail_ims  = 'bash -c "~/.config/awesome/Scripts/checkmail_ims.sh"'
-cmd_mail      = 'bash -c "~/.config/awesome/Scripts/checkmail_uni.sh"'
+cmd_net_total = 'bash -c "~/.config/awesome/Scripts/net_totals.sh"'
+cmd_mail_ims  = 'bash -c "~/.config/awesome/Scripts/Hidden/checkmail_ims.sh"'
+cmd_mail      = 'bash -c "~/.config/awesome/Scripts/Hidden/checkmail_uni.sh"'
 
 
 -- Colors
 local black        = "#000000"
 local white        = "#FFFFFF"
 local gray         = "#94928F"
-
 local blue         = "#4169E1"
 local green        = "#00CC66"
 local light_green  = "#46FF9B"
@@ -55,12 +56,17 @@ local purple       = "#800080"
 local purple_dark  = "#461B7E"
 local purple_wall  = "#774A86"
 
-local color_default  = green
-local color_moderate = green_orange
-local color_stress   = yellow
+beautiful.widget_main_color = "#4169E1"
+beautiful.widget_red   = red
+beautiful.widget_blue  = blue
+beautiful.widget_green = green
+
+local color_default  = xrdb.color6
+local color_moderate = xrdb.color6
+local color_stress   = xrdb.color6
 local color_critical = red
-local accent_color   = blue
-local main_color     = green
+local accent_color   = xrdb.color2
+local main_color     = xrdb.color3
 
 -- local std_font = "Terminus (TTF) 15"
 -- local std_font = "Mono 13"
@@ -72,15 +78,15 @@ theme.fg_focus              = black
 theme.bg_normal             = black
 theme.bg_focus              = green
 theme.fg_urgent             = black
-theme.bg_urgent             = green
-theme.border_normal         = black
-theme.border_focus          = green
-theme.taglist_fg_focus      = main_color
-theme.taglist_bg_focus      = black
-theme.tasklist_fg_focus     = main_color
-theme.tasklist_fg_normal    = white
-theme.tasklist_bg_focus     = black
-theme.tasklist_bg_normal    = black
+theme.bg_urgent             = xrdb.color10
+theme.border_normal         = xrdb.background
+theme.border_focus          = xrdb.color5
+theme.taglist_fg_focus      = xrdb.color6
+theme.taglist_bg_focus      = xrdb.background
+theme.tasklist_fg_focus     = xrdb.color6
+theme.tasklist_fg_normal    = xrdb.color2
+theme.tasklist_bg_focus     = xrdb.background
+theme.tasklist_bg_normal    = xrdb.background
 theme.border_width          = 0
 theme.tasklist_disable_icon = true
 theme.useless_gap           = 8
@@ -95,7 +101,11 @@ end
 function notification_show(str)
     notification_hide()
     notification = naughty.notify {
-        preset = { font = "Terminus (TTF) 18", fg = main_color},
+        preset = {
+            font = "Terminus (TTF) 18",
+            fg = main_color,
+            bg = black
+          },
         -- title  = "Warning",
         text   = str
     }
@@ -105,8 +115,12 @@ end
 local mytextclock = wibox.widget.textclock(" %H%M ")
 mytextclock.font = theme.font
 
+
+local pomodoro = require("widgets.pomodoro.pomodoro")
+
 --Calendar
 lain.widget.cal({
+    icons = '',
     attach_to = { mytextclock },
     notification_preset = {
         font = "Terminus (TTF) 20",
@@ -124,19 +138,19 @@ function net_notification_show(str)
 end
 ip4 = awful.widget.watch(cmd_ip4, 600, function(widget, stdout)
     if (stdout == "") then
-        widget:set_markup(markup.fontfg(std_font, blue, 'no ip4'))
+        widget:set_markup(markup.fontfg(std_font, accent_color, 'no ip4'))
     else
-        widget:set_markup(markup.fontfg(std_font, blue, stdout))
+        widget:set_markup(markup.fontfg(std_font, accent_color, stdout))
     end
-    widget:connect_signal("mouse::enter", net_notification_show)
+    widget:connect_signal("button::press", net_notification_show)
     widget:connect_signal("mouse::leave", notification_hide)
     return
 end)
 
 -- Show ssid
 ssid = awful.widget.watch(cmd_ssid, 600, function(widget, stdout)
-    widget:set_markup(markup.fontfg(std_font, blue, stdout))
-    widget:connect_signal("mouse::enter", net_notification_show)
+    widget:set_markup(markup.fontfg(std_font, accent_color, stdout))
+    widget:connect_signal("button::press", net_notification_show)
     widget:connect_signal("mouse::leave", notification_hide)
     return
 end)
@@ -172,7 +186,7 @@ cpu_temp = awful.widget.watch(cmd_cpu_temp, 10, function(widget, stdout)
     end
     value = string.format("%02.0f", value)
     widget:set_markup(markup.fontfg(std_font, color, value .. '°C'))
-    widget:connect_signal("mouse::enter", temps_notification_show)
+    widget:connect_signal("button::press", temps_notification_show)
     widget:connect_signal("mouse::leave", notification_hide)
     return
 end)
@@ -196,9 +210,9 @@ gpu_temp = awful.widget.watch(cmd_gpu_temp, 10, function(widget, stdout)
     end
     value = string.format("%02.0f", value)
     widget:set_markup(markup.fontfg(std_font, color, value .. '°C'))
-    widget:connect_signal("mouse::enter", gpu_notification_show)
+    -- widget:connect_signal("mouse::enter", gpu_notification_show)
     widget:connect_signal("mouse::leave", notification_hide)
-    -- widget:connect_signal("button::press", )
+    widget:connect_signal("button::press", gpu_notification_show)
     return
 end)
 
@@ -208,8 +222,13 @@ function cpu_notification_show(str)
         notification_show(f)
     end)
 end
+local runonce = 0
 function cpu_on_click()
     awful.spawn(terminal .. ' htop -s PERCENT_CPU')
+    -- TODO Fix
+    helpers.async('sleep 1', function(f)
+        runonce = 0
+    end)
 end
 local cpu_util = lain.widget.cpu({
     settings = function()
@@ -224,9 +243,19 @@ local cpu_util = lain.widget.cpu({
             color = color_default
         end
         widget:set_markup(markup.font(std_font, markup(color, cpu_now.usage .. "%")))
-        widget:connect_signal("mouse::enter", cpu_notification_show)
+        -- widget:connect_signal("mouse::enter", cpu_notification_show)
         widget:connect_signal("mouse::leave", notification_hide)
-        widget:connect_signal("button::press", cpu_on_click)
+        widget:connect_signal("button::press", function(_, _, _, button)
+            if (button == 3) then cpu_notification_show()
+            elseif (button == 1) then cpu_notification_show()
+            elseif (button == 2) then
+              if (runonce == 0) then
+                runonce = 1
+                cpu_on_click()
+              end
+            end
+        end)
+
     end
 })
 
@@ -236,8 +265,13 @@ function mem_notification_show(str)
         notification_show(f)
     end)
 end
+local runonce = 0
 function mem_on_click()
     awful.spawn(terminal .. ' htop -s PERCENT_MEM')
+    -- TODO Fix
+    helpers.async('sleep 1', function(f)
+        runonce = 0
+    end)
 end
 local mem = lain.widget.mem({
     settings = function()
@@ -252,9 +286,18 @@ local mem = lain.widget.mem({
             color = color_default
         end
         widget:set_markup(markup.font(std_font, markup(color, value .. "mb")))
-        widget:connect_signal("mouse::enter", mem_notification_show)
+        -- widget:connect_signal("mouse::enter", mem_notification_show)
         widget:connect_signal("mouse::leave", notification_hide)
-        widget:connect_signal("button::press", mem_on_click)
+        widget:connect_signal("button::press", function(_, _, _, button)
+            if (button == 3) then mem_notification_show()
+            elseif (button == 1) then mem_notification_show()
+            elseif (button == 2) then
+              if (runonce == 0) then
+                runonce = 1
+                mem_on_click()
+              end
+            end
+        end)
     end
 })
 
@@ -262,9 +305,14 @@ local mem = lain.widget.mem({
 theme.fs = lain.widget.fs({
     notification_preset = { font = "Terminus (TTF) 18", fg = main_color},
     settings  = function()
-        widget:set_markup(markup.fontfg(std_font, blue, string.format("%.2f", fs_now["/"].free) .. "gb"))
+        widget:set_markup(markup.fontfg(std_font, accent_color, string.format("%.2f", fs_now["/"].free) .. "gb"))
     end
 })
+
+total_net = awful.widget.watch(cmd_net_total, 10, function(widget, stdout)
+    widget:set_markup(markup.fontfg(std_font, accent_color, tonumber(stdout) .. 'mb'))
+    return
+end)
 
 --Net checker
 local net = lain.widget.net({
@@ -281,8 +329,7 @@ local net = lain.widget.net({
         end
         value = string.format("%04.0f", value)
         widget:set_markup(
-            markup.fontfg(std_font, color, " " .. value .. "kb/s ") ..
-            markup.fontfg(std_font, accent_color, net_now.total .. "mb")
+            markup.fontfg(std_font, color, " " .. value .. "kb/s ")
           )
     end
 })
@@ -314,6 +361,7 @@ end
 theme.weather = lain.widget.weather({
     notification_preset = { font = "Terminus (TTF) 18", fg = main_color},
     city_id = 2836320,
+    icons_path = '',
     settings = function()
         units = math.floor(weather_now["main"]["temp"])
         widget:set_markup(markup.fontfg(std_font, accent_color, units .. "°C"))
@@ -336,17 +384,17 @@ function theme.at_screen_connect(s)
     s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
     -- Create the wibox
     -- s.mywibox = awful.wibar({ position = "top", screen = s, bg = beautiful.bg_normal .. "0", height = 20  })
-    s.mywibox = awful.wibar({ position = "top", screen = s, height = 20 })
+    s.mywibox = awful.wibar({ position = "top", screen = s, bg = xrdb.background, height = 20 })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
         layout = wibox.layout.align.horizontal,
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
-            s.mytaglist,
-            s.mytxtlayoutbox,
+            s.mytaglist, s.mytxtlayoutbox,
             spr,
             net.widget,
+            total_net,
             spr,
             ip4,
             spr,
@@ -375,9 +423,11 @@ function theme.at_screen_connect(s)
             spr,
             theme.fs.widget,
             spr,
+            pomodoro,
+            spr,
             wibox.widget.systray(),
             spr,
-            mytextclock
+            mytextclock,
         },
     }
 end

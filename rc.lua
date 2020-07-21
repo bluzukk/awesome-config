@@ -19,7 +19,9 @@ local menubar       = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
                       require("awful.hotkeys_popup.keys")
 local my_table      = awful.util.table or gears.table -- 4.{0,1} compatibility
-local dpi           = require("beautiful.xresources").apply_dpi
+local xresources    = require("beautiful.xresources")
+local dpi           = xresources.apply_dpi
+local xrdb          = xresources.get_current_theme()
 -- }}}
 
 -- {{{ Error handling
@@ -55,6 +57,7 @@ end
 run_once({ "nitrogen --restore", "xcompmgr", "setxkbmap de"})
 
 
+
 -- {{{ Variable definitions
 local chosen_theme = 'theme'
 local modkey       = "Mod4"
@@ -62,7 +65,7 @@ local altkey       = "Mod1"
 -- local terminal     = "st -f 'Terminus (TTF)-15'"
 local terminal     = "st -f 'Mono-14'"
 -- local dmenu        = "dmenu_run -fn 'Terminus (TTF)-15' -nb black -nf white -sb black -sf green"
-local dmenu        = "dmenu_run -fn 'Mono-15' -nb black -nf white -sb black -sf purple"
+local dmenu        = "dmenu_run -fn 'Mono-15' -nb \'" .. xrdb.background .. "\' -nf \'" .. xrdb.color6 .. "\' -sb \'" .. xrdb.background .. "\' -sf \'" .. xrdb.color2 .. "\'"
 local cycle_prev   = false -- cycle trough all previous client or just the first -- https://github.com/lcpz/awesome-copycats/issues/274
 local editor       = os.getenv("$EDITOR") or "vim"
 local gui_editor   = os.getenv("$GUI_EDITOR") or "gvim"
@@ -432,6 +435,7 @@ clientkeys = my_table.join(
     awful.key({ modkey,           }, "f",
         function (c)
             c.fullscreen = not c.fullscreen
+            -- c.opacity = 1
             c:raise()
         end,
         {description = "toggle fullscreen", group = "client"}),
@@ -588,13 +592,14 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
-
 -- client.connect_signal("focus", function(c)
 --                               c.border_color = beautiful.border_focus
---                               c.opacity = 0.9
+--                               c.opacity = 1
 --                            end)
 -- client.connect_signal("unfocus", function(c)
 --                                 c.border_color = beautiful.border_normal
 --                                 c.opacity = 0.9
 --                              end)
+
+
 -- beautiful.useless_gap = 10
