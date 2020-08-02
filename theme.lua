@@ -163,7 +163,7 @@ cpu_temp = awful.widget.watch(cmd_cpu_temp, 10, function(widget, stdout)
         color = color_default
     end
     value = string.format("%02.0f", value)
-    widget:set_markup(markup.fontfg(std_font, color, value .. '°C'))
+    widget:set_markup(markup.fontfg(std_font, color, value .. '°C '))
     widget:connect_signal("button::press", temps_notification_show)
     widget:connect_signal("mouse::leave", notification_hide)
     return
@@ -187,7 +187,7 @@ gpu_temp = awful.widget.watch(cmd_gpu_temp, 10, function(widget, stdout)
         color = color_default
     end
     value = string.format("%02.0f", value)
-    widget:set_markup(markup.fontfg(std_font, color, value .. '°C'))
+    widget:set_markup(markup.fontfg(std_font, color, value .. '°C '))
     -- widget:connect_signal("mouse::enter", gpu_notification_show)
     widget:connect_signal("mouse::leave", notification_hide)
     widget:connect_signal("button::press", gpu_notification_show)
@@ -216,7 +216,7 @@ local cpu_util = lain.widget.cpu({
         elseif value > 27 then color = color_moderate
         else                   color = color_default
         end
-        widget:set_markup(markup.font(std_font, markup(color, cpu_now.usage .. "%")))
+        widget:set_markup(markup.font(std_font, markup(color, cpu_now.usage .. "% ")))
         widget:connect_signal("mouse::enter", cpu_notification_show)
         widget:connect_signal("mouse::leave", notification_hide)
         -- widget:connect_signal("button::press", function(_, _, _, button)
@@ -307,7 +307,7 @@ local bat = lain.widget.bat({
             elseif value > 24 then color = color_stress
             else                   color = color_critical end
             widget:set_markup(
-                markup.font(std_font, markup(color, value .. "%"))
+                markup.font(std_font, markup(color," " .. value .. "%"))
             )
         end
 end
@@ -357,9 +357,9 @@ function theme.at_screen_connect(s)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             --todo_widget, spr,
-            cpu_util, spr,
-            cpu_temp, spr,
-            gpu_temp, spr,
+            cpu_util,
+            cpu_temp,
+            gpu_temp,
             mem.widget,
             mail, mail_ims,
             bat.widget, spr,
