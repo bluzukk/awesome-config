@@ -75,12 +75,12 @@ local notification = nil
 
 function notification_hide()
     if not notification then return end
-    -- naughty.destroy(notification)
-    -- notification = nil
+    naughty.destroy(notification)
+    notification = nil
 end
 
 function notification_show(str)
-    -- notification_hide()
+    notification_hide()
     notification = naughty.notify {
         preset = {
             font = "Terminus (TTF) 18",
