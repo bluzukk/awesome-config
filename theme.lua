@@ -49,9 +49,9 @@ local accent_color     = xrdb.color2
 local main_color       = xrdb.color3
 local background_color = xrdb.background
 
--- local std_font = "Terminus (TTF) 15"
+local std_font = "Terminus (TTF) 15"
 -- local std_font = "Mono 13"
-local std_font = "Sans 13"
+-- local std_font = "Sans 12"
 
 theme.font                  = std_font
 theme.fg_normal             = xrdb.color2
@@ -93,13 +93,13 @@ function notification_show(str)
 end
 
 -- Textclock
-local textclock = wibox.widget.textclock(" %H%M ")
-textclock.font = theme.font
+local clock = wibox.widget.textclock(" %H%M ")
+clock.font = theme.font
 
 --Calendar
 lain.widget.cal({
     icons = '',
-    attach_to = { mytextclock },
+    attach_to = { clock },
     notification_preset = {
         font = "Terminus (TTF) 20",
         fg   = main_color,
@@ -339,7 +339,12 @@ function theme.at_screen_connect(s)
     s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
     -- Create the wibox
     -- s.mywibox = awful.wibar({ position = "top", screen = s, bg = beautiful.bg_normal .. "0", height = 20  })
-    s.mywibox = awful.wibar({ position = "top", screen = s, bg = background_color, height = 20 })
+    if s == screen.primary then
+        s.mywibox = awful.wibar({ position = "top", screen = s, bg = background_color, height = 20 })
+    else
+        s.mywibox = awful.wibar({ position = "top", screen = s, bg = background_color, height = 20, font = "Sans 5"})
+    end
+    -- s.mywibox = awful.wibar({ position = "top", screen = s, bg = background_color, height = 20 })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
@@ -367,7 +372,7 @@ function theme.at_screen_connect(s)
             theme.fs.widget, spr,
             --pomodoro, spr,
             wibox.widget.systray(), spr,
-            textclock,
+            clock,
         },
     }
 end

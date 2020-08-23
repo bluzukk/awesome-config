@@ -54,7 +54,7 @@ local function run_once(cmd_arr)
     end
 end
 
-run_once({ "nitrogen --restore", "xcompmgr", "setxkbmap de"})
+run_once({ "xcompmgr", "setxkbmap de"})
 
 
 
@@ -62,10 +62,11 @@ run_once({ "nitrogen --restore", "xcompmgr", "setxkbmap de"})
 local chosen_theme = 'theme'
 local modkey       = "Mod4"
 local altkey       = "Mod1"
--- local terminal     = "st -f 'Terminus (TTF)-15'"
-local terminal     = "st -f 'Mono-14'"
+local terminal     = "st -f 'Terminus (TTF)-17'"
+-- local terminal     = "st -f 'Mono-14'"
 -- local dmenu        = "dmenu_run -fn 'Terminus (TTF)-15' -nb black -nf white -sb black -sf green"
-local dmenu        = "dmenu_run -fn 'Mono-15' -nb \'" .. xrdb.background .. "\' -nf \'" .. xrdb.color6 .. "\' -sb \'" .. xrdb.background .. "\' -sf \'" .. xrdb.color2 .. "\'"
+local dmenu        = "dmenu_run -fn 'Terminus (TTF)-20' -nb \'" .. xrdb.background .. "\' -nf \'" .. xrdb.color6 .. "\' -sb \'" .. xrdb.background .. "\' -sf \'" .. xrdb.color2 .. "\'"
+-- local dmenu        = "dmenu_run -fn 'Mono-15' -nb \'" .. xrdb.background .. "\' -nf \'" .. xrdb.color6 .. "\' -sb \'" .. xrdb.background .. "\' -sf \'" .. xrdb.color2 .. "\'"
 local cycle_prev   = false -- cycle trough all previous client or just the first -- https://github.com/lcpz/awesome-copycats/issues/274
 local editor       = os.getenv("$EDITOR") or "vim"
 local gui_editor   = os.getenv("$GUI_EDITOR") or "gvim"
@@ -75,10 +76,10 @@ awful.util.terminal = terminal
 awful.util.tagnames = { "have", "some", "fun"}
 awful.layout.layouts = {
     awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
-    -- awful.layout.suit.magnifier,
+    awful.layout.suit.tile,
+    --awful.layout.suit.tile.left,
     awful.layout.suit.floating,
-    awful.layout.suit.tile.top,
+    --awful.layout.suit.tile.top,
     --awful.layout.suit.fair,
     --awful.layout.suit.fair.horizontal,
     --awful.layout.suit.spiral,
@@ -98,15 +99,13 @@ awful.layout.layouts = {
     --lain.layout.termfair.center,
 }
 
-lain.layout.termfair.nmaster           = 3
-lain.layout.termfair.ncol              = 1
-lain.layout.termfair.center.nmaster    = 3
-lain.layout.termfair.center.ncol       = 1
-lain.layout.cascade.tile.offset_x      = dpi(2)
-lain.layout.cascade.tile.offset_y      = dpi(32)
-lain.layout.cascade.tile.extra_padding = dpi(5)
-lain.layout.cascade.tile.nmaster       = 5
-lain.layout.cascade.tile.ncol          = 2
+-- awful.tag.add("have", {
+--     layout             = awful.layout.suit.tile,
+--     gap_single_client  = true,
+--     gap                = 0,
+--     screen             = s,
+--     selected           = true,
+-- })
 
 awful.util.taglist_buttons = my_table.join(
     awful.button({ }, 1, function(t) t:view_only() end),
@@ -201,7 +200,6 @@ root.buttons(my_table.join(
 -- {{{ Key bindings
 globalkeys = my_table.join(
 
-
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
@@ -210,9 +208,9 @@ globalkeys = my_table.join(
     awful.key({ modkey, "Shift"   }, "q", awesome.quit,
               {description = "quit awesome", group = "awesome"}),
 
-    awful.key({ modkey,  },          "Left",     function () awful.tag.incmwfact( 0.05)          end,
+    awful.key({ modkey,  },          "Left",       function () awful.tag.incmwfact(0.05) end,
               {description = "increase master width factor", group = "layout"}),
-    awful.key({ modkey,  },          "Right",     function () awful.tag.incmwfact(-0.05)          end,
+    awful.key({ modkey,  },          "Right",     function () awful.tag.incmwfact(-0.05) end,
               {description = "decrease master width factor", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
               {description = "increase the number of master clients", group = "layout"}),
@@ -423,6 +421,8 @@ globalkeys = my_table.join(
     -- User programs
     awful.key({ modkey }, "t", function () awful.spawn(browser) end,
               {description = "run browser", group = "launcher"}),
+    -- awful.key({ modkey }, "d", function () awful.spawn(terminal .. " cmus") end,
+    --           {description = "run music player", group = "launcher"}),
     awful.key({ modkey }, "a", function () awful.spawn(guieditor) end,
               {description = "run gui editor", group = "launcher"}),
     awful.key({ modkey }, "r", function () awful.spawn(dmenu) end,
@@ -450,6 +450,8 @@ clientkeys = my_table.join(
               {description = "move to master", group = "client"}),
     awful.key({ modkey,           }, "o",      function (c) c:move_to_screen() end,
               {description = "move to screen", group = "client"}),
+
+    awful.key({ modkey, "Shift"   }, "y", awful.placement.centered),
 
     awful.key({ modkey,           }, "n",
         function (c)
