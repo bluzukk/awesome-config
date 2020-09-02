@@ -47,10 +47,10 @@ local color_stress     = xrdb.color8
 local color_critical   = red
 local accent_color     = xrdb.color2
 local main_color       = xrdb.color3
--- local background_color = xrdb.background
-local background_color = black
+local background_color = xrdb.background
+-- local background_color = black
 
-local std_font = "Terminus (TTF) 15"
+local std_font = "Terminus (TTF) 16.5"
 -- local std_font = "Mono 13"
 -- local std_font = "Sans 13"
 
@@ -67,7 +67,7 @@ theme.tasklist_fg_focus     = xrdb.color6
 theme.tasklist_fg_normal    = xrdb.color2
 theme.tasklist_bg_focus     = background_color
 theme.tasklist_bg_normal    = background_color
-theme.border_width          = 0
+theme.border_width          = 2
 theme.tasklist_disable_icon = true
 theme.useless_gap           = 8
 -- theme.tasklist_plain_task_name = true
@@ -102,7 +102,7 @@ lain.widget.cal({
     icons = '',
     attach_to = { clock },
     notification_preset = {
-        font = "Terminus (TTF) 20",
+        font = "Terminus (TTF) 18",
         fg   = main_color,
         bg   = black,
         icon = ""

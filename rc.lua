@@ -62,7 +62,7 @@ run_once({ "xcompmgr", "setxkbmap de"})
 local chosen_theme = 'theme'
 local modkey       = "Mod4"
 local altkey       = "Mod1"
-local terminal     = "st -f 'Terminus (TTF)-16'"
+local terminal     = "st -f 'Terminus (TTF)-16.5'"
 -- local terminal     = "st -f 'Mono-15'"
 -- local dmenu        = "dmenu_run -fn 'Terminus (TTF)-15' -nb black -nf white -sb black -sf green"
 local dmenu        = "dmenu_run -fn 'Terminus (TTF)-20' -nb \'" .. xrdb.background .. "\' -nf \'" .. xrdb.color6 .. "\' -sb \'" .. xrdb.background .. "\' -sf \'" .. xrdb.color2 .. "\'"
@@ -246,8 +246,12 @@ globalkeys = my_table.join(
     -- X screen locker
     awful.key({ altkey, "Control" }, "l", function () os.execute(scrlocker) end,
               {description = "lock screen", group = "hotkeys"}),
-    awful.key({ modkey,  }, "w", function ()
+    awful.key({ modkey,  }, "0", function ()
                 os.execute('. ~/.config/awesome/Scripts/setbg.sh')
+              end, awesome.restart,
+              {description = "change wallpaper and theme", group = "hotkeys"}),
+    awful.key({ modkey,  }, "9", function ()
+                os.execute('. ~/.config/awesome/Scripts/randombg.sh')
               end, awesome.restart,
               {description = "change wallpaper and theme", group = "hotkeys"}),
 
@@ -556,14 +560,15 @@ awful.rules.rules = {
                      keys = clientkeys,
                      buttons = clientbuttons,
                      screen = awful.screen.preferred,
+                     opacity = 1,
                      placement = awful.placement.no_overlap+awful.placement.no_offscreen,
                      size_hints_honor = false
      }
     },
 
     -- Set Firefox to always map on the first tag on screen 1.
-    { rule = { class = "Firefox" },
-      properties = { screen = 1, tag = awful.util.tagnames[1] } },
+    { rule = { class = "firefox" },
+      properties = { screen = 1, tag = awful.util.tagnames[1], opacity = 1 } },
 
     { rule = { class = "Gimp", role = "gimp-image-window" },
           properties = { maximized = true } },
@@ -597,14 +602,14 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
--- client.connect_signal("focus", function(c)
---                               c.border_color = beautiful.border_focus
---                               c.opacity = 1
---                            end)
--- client.connect_signal("unfocus", function(c)
---                                 c.border_color = beautiful.border_normal
---                                 c.opacity = 0.9
---                              end)
+client.connect_signal("focus", function(c)
+                              c.border_color = beautiful.border_focus
+                              c.opacity = 1
+                           end)
+client.connect_signal("unfocus", function(c)
+                                c.border_color = beautiful.border_normal
+                                c.opacity = 0.75
+                             end)
 
 
 -- beautiful.useless_gap = 10
