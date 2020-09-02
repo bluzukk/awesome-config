@@ -47,11 +47,12 @@ local color_stress     = xrdb.color8
 local color_critical   = red
 local accent_color     = xrdb.color2
 local main_color       = xrdb.color3
-local background_color = xrdb.background
+-- local background_color = xrdb.background
+local background_color = black
 
 local std_font = "Terminus (TTF) 15"
 -- local std_font = "Mono 13"
--- local std_font = "Sans 12"
+-- local std_font = "Sans 13"
 
 theme.font                  = std_font
 theme.fg_normal             = xrdb.color2
@@ -59,7 +60,7 @@ theme.bg_normal             = black
 theme.fg_urgent             = black
 theme.bg_urgent             = xrdb.color10
 theme.border_normal         = background_color
-theme.border_focus          = xrdb.color5
+theme.border_focus          = xrdb.color2
 theme.taglist_fg_focus      = xrdb.color6
 theme.taglist_bg_focus      = background_color
 theme.tasklist_fg_focus     = xrdb.color6

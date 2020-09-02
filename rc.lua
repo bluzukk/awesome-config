@@ -62,11 +62,11 @@ run_once({ "xcompmgr", "setxkbmap de"})
 local chosen_theme = 'theme'
 local modkey       = "Mod4"
 local altkey       = "Mod1"
-local terminal     = "st -f 'Terminus (TTF)-17'"
--- local terminal     = "st -f 'Mono-14'"
+local terminal     = "st -f 'Terminus (TTF)-16'"
+-- local terminal     = "st -f 'Mono-15'"
 -- local dmenu        = "dmenu_run -fn 'Terminus (TTF)-15' -nb black -nf white -sb black -sf green"
 local dmenu        = "dmenu_run -fn 'Terminus (TTF)-20' -nb \'" .. xrdb.background .. "\' -nf \'" .. xrdb.color6 .. "\' -sb \'" .. xrdb.background .. "\' -sf \'" .. xrdb.color2 .. "\'"
--- local dmenu        = "dmenu_run -fn 'Mono-15' -nb \'" .. xrdb.background .. "\' -nf \'" .. xrdb.color6 .. "\' -sb \'" .. xrdb.background .. "\' -sf \'" .. xrdb.color2 .. "\'"
+-- local dmenu        = "dmenu_run -fn 'Mono-18' -nb \'" .. xrdb.background .. "\' -nf \'" .. xrdb.color6 .. "\' -sb \'" .. xrdb.background .. "\' -sf \'" .. xrdb.color2 .. "\'"
 local cycle_prev   = false -- cycle trough all previous client or just the first -- https://github.com/lcpz/awesome-copycats/issues/274
 local editor       = os.getenv("$EDITOR") or "vim"
 local gui_editor   = os.getenv("$GUI_EDITOR") or "gvim"
@@ -421,8 +421,8 @@ globalkeys = my_table.join(
     -- User programs
     awful.key({ modkey }, "t", function () awful.spawn(browser) end,
               {description = "run browser", group = "launcher"}),
-    -- awful.key({ modkey }, "d", function () awful.spawn(terminal .. " cmus") end,
-    --           {description = "run music player", group = "launcher"}),
+    awful.key({ modkey }, "d", function () awful.spawn(terminal .. " -e musikcube") end,
+              {description = "run music player", group = "launcher"}),
     awful.key({ modkey }, "a", function () awful.spawn(guieditor) end,
               {description = "run gui editor", group = "launcher"}),
     awful.key({ modkey }, "r", function () awful.spawn(dmenu) end,
