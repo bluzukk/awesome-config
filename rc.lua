@@ -54,7 +54,10 @@ local function run_once(cmd_arr)
     end
 end
 
-run_once({ "xcompmgr", "setxkbmap de"})
+run_once({ "xcompmgr", "setxkbmap de", "nitrogen --restore"})
+
+
+select_wallpaper = "ls $HOME/Rice/wallpaper/nice/ | rofi -dmenu | xargs -I{} .config/awesome/Scripts/randombg.sh /home/bluzuk/Rice/wallpaper/nice/{}"
 
 
 
@@ -250,6 +253,10 @@ globalkeys = my_table.join(
                 os.execute('. ~/.config/awesome/Scripts/setbg.sh')
               end, awesome.restart,
               {description = "change wallpaper and theme", group = "hotkeys"}),
+    awful.key({ modkey,  }, "8", function ()
+                os.execute("ls $HOME/Rice/wallpaper/nice/ | rofi -dmenu | xargs -I{} .config/awesome/Scripts/randombg.sh /home/bluzuk/Rice/wallpaper/nice/{}")
+              end, awesome.restart,
+                {description = "change wallpaper and theme", group = "hotkeys"}),
     awful.key({ modkey,  }, "9", function ()
                 os.execute('. ~/.config/awesome/Scripts/randombg.sh')
               end, awesome.restart,
@@ -567,8 +574,8 @@ awful.rules.rules = {
     },
 
     -- Set Firefox to always map on the first tag on screen 1.
-    { rule = { class = "firefox" },
-      properties = { screen = 1, tag = awful.util.tagnames[1], opacity = 1 } },
+    -- { rule = { class = "firefox" },
+    --   properties = { screen = 1, tag = awful.util.tagnames[1], opacity = 1 } },
 
     { rule = { class = "Gimp", role = "gimp-image-window" },
           properties = { maximized = true } },
@@ -602,14 +609,14 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
-client.connect_signal("focus", function(c)
-                              c.border_color = beautiful.border_focus
-                              c.opacity = 1
-                           end)
-client.connect_signal("unfocus", function(c)
-                                c.border_color = beautiful.border_normal
-                                c.opacity = 0.75
-                             end)
+-- client.connect_signal("focus", function(c)
+--                               c.border_color = beautiful.border_focus
+--                               c.opacity = 1
+--                            end)
+-- client.connect_signal("unfocus", function(c)
+--                                 c.border_color = beautiful.border_normal
+--                                 c.opacity = 0.75
+--                              end)
 
 
 -- beautiful.useless_gap = 10

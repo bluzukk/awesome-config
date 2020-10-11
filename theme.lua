@@ -26,6 +26,9 @@ cmd_cpu_temp  = 'bash -c "cat /sys/class/hwmon/hwmon1/temp2_input"'
 cmd_temps     = 'bash -c "sensors -A"'
 
 cmd_gpu_temp  = 'bash -c "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader"'
+cmd_gpu_util  = 'bash -c "nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader"'
+cmd_gpu_clock  = 'bash -c "nvidia-smi --query-gpu=clocks.current.graphics --format=csv,noheader"'
+
 cmd_gpu       = 'bash -c "nvidia-smi"'
 
 cmd_proc_cpu  = 'bash -c "ps -Ao pcpu,comm,user,pid, --sort=-pcpu | head -n 30"'
@@ -67,7 +70,7 @@ theme.tasklist_fg_focus     = xrdb.color6
 theme.tasklist_fg_normal    = xrdb.color2
 theme.tasklist_bg_focus     = background_color
 theme.tasklist_bg_normal    = background_color
-theme.border_width          = 2
+theme.border_width          = 0
 theme.tasklist_disable_icon = true
 theme.useless_gap           = 8
 -- theme.tasklist_plain_task_name = true
@@ -195,6 +198,17 @@ gpu_temp = awful.widget.watch(cmd_gpu_temp, 10, function(widget, stdout)
     return
 end)
 
+gpu_util = awful.widget.watch(cmd_gpu_util, 10, function(widget, stdout)
+    local str = string.match(stdout, "%d+")
+    widget:set_markup(markup.fontfg(std_font, color_default, str .. '% '))
+    return
+end)
+-- gpu_clock = awful.widget.watch(cmd_gpu_clock, 10, function(widget, stdout)
+--     local str = string.match(stdout, "%d+")
+--     widget:set_markup(markup.fontfg(std_font, color_default, str .. 'Mhz  '))
+--     return
+-- end)
+
 --CPU
 function cpu_notification_show(str)
     helpers.async(cmd_proc_cpu, function(f)
@@ -255,7 +269,7 @@ local mem = lain.widget.mem({
         elseif value > 6000  then color = color_moderate
         else                      color = color_default
         end
-        widget:set_markup(markup.font(std_font, markup(color, value .. "mb")))
+        widget:set_markup(markup.font(std_font, markup(color, value .. "mb ")))
         widget:connect_signal("mouse::enter", mem_notification_show)
         widget:connect_signal("mouse::leave", notification_hide)
         -- widget:connect_signal("button::press", function(_, _, _, button)
@@ -280,7 +294,7 @@ theme.fs = lain.widget.fs({
 })
 
 total_net = awful.widget.watch(cmd_net_total, 10, function(widget, stdout)
-    widget:set_markup(markup.fontfg(std_font, accent_color, tonumber(stdout) .. 'mb'))
+    widget:set_markup(markup.fontfg(std_font, accent_color, tonumber(stdout) .. 'mb '))
     return
 end)
 
@@ -308,7 +322,7 @@ local bat = lain.widget.bat({
             elseif value > 24 then color = color_stress
             else                   color = color_critical end
             widget:set_markup(
-                markup.font(std_font, markup(color," " .. value .. "%"))
+                markup.font(std_font, markup(color, value .. "% "))
             )
         end
 end
@@ -320,12 +334,12 @@ theme.weather = lain.widget.weather({
     city_id = 2836320, icons_path = '',
     settings = function()
         units = math.floor(weather_now["main"]["temp"])
-        widget:set_markup(markup.fontfg(std_font, accent_color, units .. "°C"))
+        widget:set_markup(markup.fontfg(std_font, accent_color, units .. "°C "))
     end
 })
 
 -- local pomodoro = require("widgets.pomodoro.pomodoro")
-local spr = wibox.widget.textbox('   ')
+local spr = wibox.widget.textbox(' ')
 
 function theme.at_screen_connect(s)
     -- Quake application
@@ -363,9 +377,14 @@ function theme.at_screen_connect(s)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             --todo_widget, spr,
-            cpu_util,
             cpu_temp,
+            cpu_util,
             gpu_temp,
+            -- spr,
+            gpu_util,
+            -- gpu_clock,
+            -- spr,
+            -- spr,
             mem.widget,
             mail, mail_ims,
             bat.widget, spr,
