@@ -57,23 +57,26 @@ end
 run_once({ "xcompmgr", "setxkbmap de", "nitrogen --restore"})
 
 
-select_wallpaper = "ls $HOME/Rice/wallpaper/nice/ | rofi -dmenu | xargs -I{} .config/awesome/Scripts/randombg.sh /home/bluzuk/Rice/wallpaper/nice/{}"
-
-
+dmenu_wallpaper = "ls $HOME/Rice/wallpaper/nice/ |"
+dmenu_wallpaper = dmenu_wallpaper .. "dmenu -l 20 -fn 'Terminus (TTF)-36' -nb '" .. xrdb.background .. "' -nf '" .. xrdb.color6 .. "' -sb '" .. xrdb.color8 .. "' -sf '" .. xrdb.color9 .. "'"
+dmenu_wallpaper = dmenu_wallpaper .. "| xargs -I{} .config/awesome/Scripts/randombg.sh /home/bluzuk/Rice/wallpaper/nice/{}"
 
 -- {{{ Variable definitions
 local chosen_theme = 'theme'
 local modkey       = "Mod4"
 local altkey       = "Mod1"
-local terminal     = "st -f 'Terminus (TTF)-16.5'"
+local terminal     = "st -f 'Terminus (TTF)-19'"
 -- local terminal     = "st -f 'Mono-15'"
 -- local dmenu        = "dmenu_run -fn 'Terminus (TTF)-15' -nb black -nf white -sb black -sf green"
-local dmenu        = "dmenu_run -fn 'Terminus (TTF)-20' -nb \'" .. xrdb.background .. "\' -nf \'" .. xrdb.color6 .. "\' -sb \'" .. xrdb.background .. "\' -sf \'" .. xrdb.color2 .. "\'"
+local dmenu        = "dmenu_run -fn 'Terminus (TTF)-36' -nb '" .. xrdb.background .. "' -nf '" .. xrdb.color6 .. "' -sb '" .. xrdb.background .. "' -sf '" .. xrdb.color2 .. "'"
 -- local dmenu        = "dmenu_run -fn 'Mono-18' -nb \'" .. xrdb.background .. "\' -nf \'" .. xrdb.color6 .. "\' -sb \'" .. xrdb.background .. "\' -sf \'" .. xrdb.color2 .. "\'"
 local cycle_prev   = false -- cycle trough all previous client or just the first -- https://github.com/lcpz/awesome-copycats/issues/274
 local editor       = os.getenv("$EDITOR") or "vim"
 local gui_editor   = os.getenv("$GUI_EDITOR") or "gvim"
 local browser      = os.getenv("$BROWSER") or "firefox"
+
+local mail_ims = terminal .." -e neomutt -F ~/.muttrc"
+local mail_st  = terminal .." -e neomutt -F ~/.muttrcst115547"
 
 awful.util.terminal = terminal
 awful.util.tagnames = { "have", "some", "fun"}
@@ -254,7 +257,7 @@ globalkeys = my_table.join(
               end, awesome.restart,
               {description = "change wallpaper and theme", group = "hotkeys"}),
     awful.key({ modkey,  }, "8", function ()
-                os.execute("ls $HOME/Rice/wallpaper/nice/ | rofi -dmenu | xargs -I{} .config/awesome/Scripts/randombg.sh /home/bluzuk/Rice/wallpaper/nice/{}")
+                os.execute(dmenu_wallpaper)
               end, awesome.restart,
                 {description = "change wallpaper and theme", group = "hotkeys"}),
     awful.key({ modkey,  }, "9", function ()
@@ -433,6 +436,12 @@ globalkeys = my_table.join(
     awful.key({ modkey }, "t", function () awful.spawn(browser) end,
               {description = "run browser", group = "launcher"}),
     awful.key({ modkey }, "d", function () awful.spawn(terminal .. " -e musikcube") end,
+              {description = "run music player", group = "launcher"}),
+    awful.key({ modkey }, "F1", function () awful.spawn(mail_ims) end,
+              {description = "run music player", group = "launcher"}),
+    awful.key({ modkey }, "F2", function () awful.spawn(mail_st) end,
+              {description = "run music player", group = "launcher"}),
+    awful.key({ modkey }, "F3", function () awful.spawn("lutris lutris:rungameid/1") end,
               {description = "run music player", group = "launcher"}),
     awful.key({ modkey }, "a", function () awful.spawn(guieditor) end,
               {description = "run gui editor", group = "launcher"}),

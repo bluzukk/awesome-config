@@ -29,6 +29,7 @@ cmd_gpu_temp  = 'bash -c "nvidia-smi --query-gpu=temperature.gpu --format=csv,no
 cmd_gpu_util  = 'bash -c "nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader"'
 cmd_gpu_clock  = 'bash -c "nvidia-smi --query-gpu=clocks.current.graphics --format=csv,noheader"'
 
+
 cmd_gpu       = 'bash -c "nvidia-smi"'
 
 cmd_proc_cpu  = 'bash -c "ps -Ao pcpu,comm,user,pid, --sort=-pcpu | head -n 30"'
@@ -44,35 +45,37 @@ local black        = "#000000"
 local white        = "#FFFFFF"
 local red          = "#e54c62"
 
-local color_default    = xrdb.color6
-local color_moderate   = xrdb.color7
-local color_stress     = xrdb.color8
-local color_critical   = red
-local accent_color     = xrdb.color2
-local main_color       = xrdb.color3
+local accent_color     = xrdb.color6
+local main_color       = xrdb.color7
 local background_color = xrdb.background
 -- local background_color = black
 
-local std_font = "Terminus (TTF) 16.5"
+local color_default    = main_color
+local color_moderate   = xrdb.color7
+local color_stress     = xrdb.color8
+local color_critical   = red
+
+local std_font = "Terminus (TTF) 19"
 -- local std_font = "Mono 13"
--- local std_font = "Sans 13"
+-- local std_font = "Sans 15"
+-- local std_font = "Iosevka 21"
 
 theme.font                  = std_font
-theme.fg_normal             = xrdb.color2
+theme.fg_normal             = main_color
 theme.bg_normal             = black
 theme.fg_urgent             = black
-theme.bg_urgent             = xrdb.color10
+theme.bg_urgent             = color_critical
 theme.border_normal         = background_color
-theme.border_focus          = xrdb.color2
-theme.taglist_fg_focus      = xrdb.color6
+theme.border_focus          = accent_color
+theme.taglist_fg_focus      = accent_color
 theme.taglist_bg_focus      = background_color
-theme.tasklist_fg_focus     = xrdb.color6
-theme.tasklist_fg_normal    = xrdb.color2
+theme.tasklist_fg_focus     = accent_color
+theme.tasklist_fg_normal    = xrdb.color8
 theme.tasklist_bg_focus     = background_color
 theme.tasklist_bg_normal    = background_color
 theme.border_width          = 0
 theme.tasklist_disable_icon = true
-theme.useless_gap           = 8
+theme.useless_gap           = 4
 -- theme.tasklist_plain_task_name = true
 
 local notification = nil
@@ -87,7 +90,7 @@ function notification_show(str)
     notification_hide()
     notification = naughty.notify {
         preset = {
-            font = "Terminus (TTF) 18",
+            font = std_font,
             fg = main_color,
             bg = black
           },
@@ -105,7 +108,7 @@ lain.widget.cal({
     icons = '',
     attach_to = { clock },
     notification_preset = {
-        font = "Terminus (TTF) 18",
+        font = "Terminus (TTF) 20",
         fg   = main_color,
         bg   = black,
         icon = ""
@@ -166,7 +169,7 @@ cpu_temp = awful.widget.watch(cmd_cpu_temp, 10, function(widget, stdout)
     else
         color = color_default
     end
-    value = string.format("%02.0f", value)
+    value = string.format("%02.f", value)
     widget:set_markup(markup.fontfg(std_font, color, value .. '°C '))
     widget:connect_signal("button::press", temps_notification_show)
     widget:connect_signal("mouse::leave", notification_hide)
